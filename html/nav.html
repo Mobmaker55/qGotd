@@ -17,11 +17,9 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="download" aria-expanded="false">Admin<span class="caret"></span></a>
                     <div class="dropdown-menu" aria-labelledby="download">
-                        <a class="dropdown-item" href="dist/csh-material-bootstrap.min.css">csh-material-bootstrap.min.css</a>
-                        <a class="dropdown-item" href="dist/csh-material-bootstrap.css">csh-material-bootstrap.css</a>
+                        <a class="dropdown-item" href="#">Questions</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="src/_variables.scss">_variables.scss</a>
-                        <a class="dropdown-item" href="src/csh-material-bootstrap.scss">csh-material-bootstrap.scss</a>
+                        <a class="dropdown-item" href="#">Reported Answers</a>
                     </div>
                 </li>
                 {{end}}
@@ -29,7 +27,7 @@
             <ul class="nav navbar-nav ml-auto">
                 <li class="nav-item navbar-user dropdown">
                     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="{{.username}}">
-                        <img src="https://profiles.csh.rit.edu/image/{{.username}}">
+                        <img src="https://profiles.csh.rit.edu/image/{{.username}}" alt="{{.username}}'s photo">
                         {{.name}}
                         <span class="caret"></span>
                     </a>
