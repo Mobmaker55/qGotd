@@ -1,0 +1,46 @@
+{{define "navbar"}}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="#">Daily Question</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+                aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarColor01">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Today's Question</a>
+                </li>
+                <!-- Please add more things here -->
+                {{if .isEvil}}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="download" aria-expanded="false">Admin<span class="caret"></span></a>
+                    <div class="dropdown-menu" aria-labelledby="download">
+                        <a class="dropdown-item" href="dist/csh-material-bootstrap.min.css">csh-material-bootstrap.min.css</a>
+                        <a class="dropdown-item" href="dist/csh-material-bootstrap.css">csh-material-bootstrap.css</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="src/_variables.scss">_variables.scss</a>
+                        <a class="dropdown-item" href="src/csh-material-bootstrap.scss">csh-material-bootstrap.scss</a>
+                    </div>
+                </li>
+                {{end}}
+            </ul>
+            <ul class="nav navbar-nav ml-auto">
+                <li class="nav-item navbar-user dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="{{.username}}">
+                        <img src="https://profiles.csh.rit.edu/image/{{.username}}">
+                        {{.name}}
+                        <span class="caret"></span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="{{.username}}">
+                        <a class="dropdown-item" href="https://profiles.csh.rit.edu/user/{{.username}}">Profile</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Logout (Doesn't work)</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+{{end}}
