@@ -1,0 +1,6 @@
+{
+  "ClientID": "GoCSHAuthExample",
+  "ClientSecret": "a",
+  "Issuer": "https://sso.csh.rit.edu/auth/realms/csh",
+  "Address": "example.com"
+}
