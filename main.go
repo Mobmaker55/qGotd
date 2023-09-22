@@ -3,17 +3,22 @@ package main
 import (
 	"errors"
 	"fmt"
+	"html/template"
 	"io"
+	"io/fs"
 	"net/http"
+	"os"
 	"time"
 )
 
 var Mux *http.ServeMux
+var HtmlTemplates *template.Template
 
 func main() {
 	readConfig()
 	Mux = http.NewServeMux()
 	initAuth()
+	initTemplates()
 
 	//register main handlers
 	Mux.HandleFunc("/", HttpLogger(getIndex))
@@ -44,4 +49,34 @@ func HttpLogger(handlerFunc http.HandlerFunc) http.HandlerFunc {
 		fmt.Println(time.Now().String() + " | " + r.Host + r.RequestURI)
 		handlerFunc(w, r)
 	}
+}
+
+// serves template and handles error
+func serveTemplate(w http.ResponseWriter, templateName string, data string) {
+	err := HtmlTemplates.ExecuteTemplate(w, templateName, data)
+	if err != nil {
+		fmt.Println("template failed to execute")
+		return
+	}
+}
+
+// initializes templates from the ./html/ directory
+func initTemplates() {
+	path, _ := os.Getwd()
+	path = path + "/html/"
+	var templates []string
+	err := fs.WalkDir(os.DirFS(path), ".", func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		fmt.Println(path)
+		templates = append(templates, path)
+
+		return nil
+	})
+	if err != nil {
+		return
+	}
+	HtmlTemplates, err = template.ParseFiles(templates...)
 }

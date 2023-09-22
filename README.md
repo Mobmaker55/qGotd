@@ -1,4 +1,4 @@
-# GoCSHAuth
-An example / template repository for using CSH's OpenID authentication.
+# qGotd
+Question of the Day written in Golang!
 
-To make work, edit conf.json.example and remove .example and then it starts :)
+Digitized version of PRoom's board. because more containerized services is better.
