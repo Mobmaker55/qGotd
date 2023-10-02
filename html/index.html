@@ -5,29 +5,64 @@
     <title>Question of the Day</title>
     <link rel="stylesheet"
           href="https://s3.csh.rit.edu/csh-material-bootstrap/4.0.0/dist/csh-material-bootstrap.min.css" media="screen">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,300,0,0"/>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-            crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
             integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
             crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
+    <script src="js/index.js"></script>
+
+    <style>
+        .card {
+            transition-duration: .5s;
+            max-width: 25rem;
+            margin-inline: 1rem;
+        }
+
+        .card:hover {
+            border-color: #b0197e !important;
+
+        }
+
+        .card-body {
+            padding-bottom: 0;
+            display: inline-block !important;
+
+        }
+    </style>
 </head>
 <body>
-    {{template "navbar" .}}
-    <div class="container py-5">
-        <h1>Hello {{.name}}</h1>
-        <div class="card border-primary mb-3" style="max-width: 20rem;">
-            <div class="card-header">Header</div>
+{{template "navbar" .}}
+<div class="container py-5">
+    <div class="mx-auto" style="max-width: fit-content">
+        <h1>Today's Question:</h1>
+        <h1 class="display-3"><b>{{.question}}</b></h1>
+    </div>
+    <hr class="my-4">
+    <div id="responseHolder" style="margin-inline: -1rem">
+        <div class="card border-secondary mb-3 d-inline-block" style=" ">
             <div class="card-body text-primary">
-                <h4 class="card-title">Primary card title</h4>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <input type="text" class="form-control" style="height:fit-content; margin-bottom: 8px; width: 100%" placeholder="Response..." id="responseValue">
+                <input hidden="hidden" type="text" id="responseUser" value="{{.username}}">
+            </div>
+            <div class="card-header container">
+                <div class="row">
+                    <div class="col h-100 align-self-center" style="max-width: fit-content">
+                        <button id="postButton" type="button" class="btn btn-success">SUBMIT</button>
+                    </div>
+                    <div class="col text-right w-100 pr-1">
+                    </div>
+                    <div class="w-100"></div>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
 </body>
 </html>

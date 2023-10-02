@@ -11,6 +11,7 @@ import (
 	"golang.org/x/oauth2"
 	"io"
 	"net/http"
+	"slices"
 	"time"
 )
 
@@ -35,6 +36,7 @@ type UserInfo struct {
 	GivenName         string   `json:"given_name"`
 	FamilyName        string   `json:"family_name"`
 	Email             string   `json:"email"`
+	isEvil            bool
 }
 
 // Initialize authentication functions and processes
@@ -56,7 +58,7 @@ func initAuth() {
 		Scopes: []string{oidc.ScopeOpenID},
 	}
 
-	Mux.HandleFunc("/redirect", getRedirect)
+	Mux.HandleFunc("/redirect", HttpLogger(getRedirect))
 	Mux.HandleFunc("/login", HttpLogger(getLogin))
 
 }
@@ -82,7 +84,8 @@ func getRedirect(w http.ResponseWriter, r *http.Request) {
 	//see if data is valid
 	sess, err := r.Cookie("AuthSession")
 	if err != nil {
-		http.Error(w, "session not found", http.StatusBadRequest)
+		fmt.Println(err.Error())
+		//http.Error(w, "session not found", http.StatusBadRequest)
 		return
 	}
 	sessId := sess.Value
@@ -147,6 +150,11 @@ func getUserInfo(token *oauth2.Token) (UserInfo, error) {
 	if err != nil {
 		return UserInfo{}, err
 	}
+	isEvil := false
+	if slices.Contains(userInfo.Groups, "eboard") || slices.Contains(userInfo.Groups, "active_rtp") || userInfo.PreferredUsername == "mob" {
+		isEvil = true
+	}
+	userInfo.isEvil = isEvil
 	return userInfo, nil
 
 }
@@ -158,6 +166,7 @@ func setTimedCookie(w http.ResponseWriter, r *http.Request, name, value string, 
 		Value:    value,
 		MaxAge:   time,
 		Secure:   r.TLS != nil,
+		Path:     "/",
 		SameSite: 3,
 		HttpOnly: true,
 	}
@@ -182,6 +191,9 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) bool {
 	}
 	_, ok := userData[ses.Value]
 	if !ok {
+		fmt.Println("cookie was invalid")
+		ses.Expires = time.Now().Add(-time.Hour)
+		http.SetCookie(w, ses)
 		return false
 	}
 	ses.MaxAge = int(time.Hour.Seconds() * 24 * 7)
@@ -190,16 +202,16 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) bool {
 }
 
 // GetUser returns UserInfo for a user, given their session cookie.
-func GetUser(r *http.Request) (UserInfo, error) {
+func GetUser(w http.ResponseWriter, r *http.Request) UserInfo {
 	ses, err := r.Cookie("Session")
 	if errors.Is(err, http.ErrNoCookie) {
-		return UserInfo{}, errors.New("cookie not found")
+		http.Redirect(w, r, "http://"+r.Host+"/login?", http.StatusFound)
 	}
 	session := ses.Value
 	data, ok := userData[session]
 	if ok {
-		return data, nil
+		return data
 	}
-	return UserInfo{}, nil
+	return UserInfo{}
 
 }

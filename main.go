@@ -8,7 +8,6 @@ import (
 	"maps"
 	"net/http"
 	"path/filepath"
-	"slices"
 )
 
 var Mux *http.ServeMux
@@ -21,9 +20,12 @@ func main() {
 	initTemplates()
 
 	//register main handlers
-	Mux.HandleFunc("/", HttpLogger(getIndex))
+	Mux.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("js"))))
+	Mux.HandleFunc("/response/", Handler(responseHandler))
+	Mux.HandleFunc("/", Handler(getIndex))
 
 	//start the server
+	fmt.Println("Pre-init complete, starting server")
 	err := http.ListenAndServe(Config.Address, Mux)
 	if errors.Is(err, http.ErrServerClosed) {
 		fmt.Printf("server one closed\n")
@@ -35,32 +37,33 @@ func main() {
 
 }
 
+func testSite(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("tested")
+	w.Write([]byte("Hi"))
+}
+
 func getIndex(w http.ResponseWriter, r *http.Request) {
-	if !IsAuthenticated(w, r) {
-		http.Redirect(w, r, "http://"+r.Host+"/login", http.StatusFound)
-		return
+	data := map[string]interface{}{
+		"question": "Do you like this app?",
 	}
-	serveTemplate(w, r, "index.html", map[string]interface{}{})
+
+	serveTemplate(w, r, "index.html", data)
 }
 
 // serves template and handles error
 func serveTemplate(w http.ResponseWriter, r *http.Request, templateName string, data map[string]interface{}) {
-	user, err := GetUser(r)
-	isEvil := false
-	if slices.Contains(user.Groups, "eboard") || slices.Contains(user.Groups, "active_rtp") || user.PreferredUsername == "mob" {
-		isEvil = true
-	}
+	user := GetUser(w, r)
 
 	//internally parsed information
 	vars := map[string]interface{}{
 		"name":     user.GivenName,
+		"fullName": user.GivenName + " " + user.FamilyName,
 		"username": user.PreferredUsername,
-		"isEvil":   isEvil,
-		"template": "index.html",
+		"isEvil":   user.isEvil,
 	}
 
 	maps.Copy(vars, data)
-	err = HtmlTemplates.ExecuteTemplate(w, templateName, vars)
+	err := HtmlTemplates.ExecuteTemplate(w, templateName, vars)
 	if err != nil {
 		fmt.Println("template failed to execute, ", err.Error())
 		return
