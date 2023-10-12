@@ -14,14 +14,14 @@ var Mux *http.ServeMux
 var HtmlTemplates *template.Template
 
 func main() {
-	readConfig()
 	Mux = http.NewServeMux()
-	initAuth()
-	initTemplates()
+	doInit()
 
 	//register main handlers
 	Mux.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("js"))))
+	Mux.HandleFunc("/admin/", Handler(adminHandler))
 	Mux.HandleFunc("/response/", Handler(responseHandler))
+	Mux.HandleFunc("/question/", Handler(questionHandler))
 	Mux.HandleFunc("/", Handler(getIndex))
 
 	//start the server
@@ -35,6 +35,14 @@ func main() {
 		fmt.Println(err)
 	}
 
+}
+
+func doInit() {
+	readConfig()
+	initAuth()
+	initTemplates()
+	initResponses()
+	initQuestions()
 }
 
 func testSite(w http.ResponseWriter, r *http.Request) {

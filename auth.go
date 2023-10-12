@@ -12,6 +12,7 @@ import (
 	"io"
 	"net/http"
 	"slices"
+	"strings"
 	"time"
 )
 
@@ -118,7 +119,7 @@ func getRedirect(w http.ResponseWriter, r *http.Request) {
 	userData[session] = userInfo
 
 	redir := callbackRedirect[sessId]
-	if redir == "" {
+	if redir == "" || strings.Contains(redir, "favicon") {
 		redir = "http://" + r.Host
 	}
 
